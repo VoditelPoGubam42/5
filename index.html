@@ -3,69 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Калорийка • FatSecret</title>
+    <title>Калорийка — Подбор меню</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
         .header-font { font-family: 'Space Grotesk', sans-serif; }
-
         .screen { display: none; }
-        .screen.active { display: block; animation: fadeIn 0.4s ease forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .food-card:hover { 
-            transform: translateY(-12px) scale(1.03); 
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); 
-        }
+        .screen.active { display: block; animation: fadeIn 0.5s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .option-card { transition: all 0.3s ease; }
+        .option-card.active { border-color: #22c55e; background-color: #052e16; }
     </style>
 </head>
 <body class="bg-zinc-950 text-white min-h-screen pb-20">
 
     <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-x-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-3xl flex items-center justify-center shadow-lg">
-                    <i class="fa-solid fa-leaf text-2xl"></i>
+        <div class="max-w-7xl mx-auto px-4 py-5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-emerald-500 rounded-2xl flex items-center justify-center">
+                    <i class="fa-solid fa-utensils text-white"></i>
                 </div>
                 <h1 class="header-font text-3xl font-semibold">Калорийка</h1>
             </div>
-            <div class="text-emerald-400 font-medium">FatSecret</div>
+            <div class="text-emerald-400 text-sm font-medium">Spoonacular</div>
         </div>
     </header>
 
-    <div class="max-w-7xl mx-auto px-4 py-6">
-        <div id="sandbox-warning" class="hidden bg-yellow-500/10 border border-yellow-500 text-yellow-400 p-4 rounded-3xl mb-6 text-sm">
-            ⚠️ Режим песочницы. Данные не сохраняются.
+    <div class="max-w-7xl mx-auto px-4 py-8">
+
+        <div class="bg-amber-500/10 border border-amber-500 text-amber-400 p-4 rounded-3xl mb-6 text-sm">
+            ⚠️ В режиме песочницы рацион сохраняется только до перезагрузки страницы.
         </div>
 
-        <!-- Поиск -->
-        <div id="screen-1" class="screen active">
-            <h2 class="text-3xl header-font font-semibold mb-2">Поиск в FatSecret</h2>
-            <p class="text-zinc-400 mb-6">Точная калорийность российских продуктов</p>
-            
-            <div class="relative mb-8">
-                <input id="search-input" type="text" placeholder="Куриная грудка, творог 5%, гречка..." 
-                       class="w-full bg-zinc-900 border border-zinc-700 focus:border-emerald-500 rounded-3xl px-7 py-6 text-lg outline-none"
-                       onkeyup="if(event.key==='Enter') searchFatSecret()">
-                <button onclick="searchFatSecret()" 
-                        class="absolute right-4 top-1/2 -translate-y-1/2 bg-emerald-500 hover:bg-emerald-600 w-12 h-12 rounded-3xl">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
+        <!-- Экран опроса -->
+        <div id="screen-survey" class="screen active">
+            <h2 class="text-3xl header-font font-semibold mb-2">Подберём меню под вас</h2>
+            <p class="text-zinc-400 mb-8">Ответьте на несколько вопросов</p>
+
+            <div class="space-y-10">
+                <div>
+                    <p class="font-medium mb-4">1. Дневная норма калорий</p>
+                    <div class="grid grid-cols-3 gap-3" id="calorie-options">
+                        <button onclick="selectOption(this)" data-value="1500" class="option-card border border-zinc-700 rounded-3xl py-5 text-center">1500 ккал</button>
+                        <button onclick="selectOption(this)" data-value="1800" class="option-card border border-emerald-500 bg-emerald-950 rounded-3xl py-5 text-center active">1800 ккал</button>
+                        <button onclick="selectOption(this)" data-value="2200" class="option-card border border-zinc-700 rounded-3xl py-5 text-center">2200+ ккал</button>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="font-medium mb-4">2. Тип питания</p>
+                    <div class="grid grid-cols-2 gap-3" id="diet-options">
+                        <button onclick="selectOption(this)" data-value="balanced" class="option-card border border-zinc-700 rounded-3xl py-5 text-center">Сбалансированное</button>
+                        <button onclick="selectOption(this)" data-value="lowcarb" class="option-card border border-zinc-700 rounded-3xl py-5 text-center">Низкоуглеводное</button>
+                        <button onclick="selectOption(this)" data-value="vegetarian" class="option-card border border-zinc-700 rounded-3xl py-5 text-center">Вегетарианское</button>
+                        <button onclick="selectOption(this)" data-value="highprotein" class="option-card border border-zinc-700 rounded-3xl py-5 text-center">Высокобелковое</button>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="font-medium mb-4">3. Предпочитаемая кухня</p>
+                    <div class="grid grid-cols-2 gap-3" id="cuisine-options">
+                        <button onclick="selectOption(this)" data-value="" class="option-card border border-emerald-500 bg-emerald-950 rounded-3xl py-5 text-center active">Любая</button>
+                        <button onclick="selectOption(this)" data-value="Italian" class="option-card border border-zinc-700 rounded-3xl py-5 text-center">Итальянская</button>
+                        <button onclick="selectOption(this)" data-value="Asian" class="option-card border border-zinc-700 rounded-3xl py-5 text-center">Азиатская</button>
+                        <button onclick="selectOption(this)" data-value="Russian" class="option-card border border-zinc-700 rounded-3xl py-5 text-center">Русская</button>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="font-medium mb-3">4. Продукты, которые нельзя есть</p>
+                    <input id="exclude-input" type="text" placeholder="орехи, морепродукты, молоко..." 
+                           class="w-full bg-zinc-900 border border-zinc-700 rounded-3xl px-6 py-5 outline-none">
+                </div>
             </div>
 
-            <div id="search-results" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            <button onclick="generateMeals()" class="mt-12 w-full bg-emerald-500 hover:bg-emerald-600 py-6 rounded-3xl text-lg font-medium">
+                Подобрать меню →
+            </button>
         </div>
 
-        <!-- Рацион -->
-        <div id="screen-2" class="screen">
-            <h2 class="text-3xl header-font font-semibold mb-6">Сегодняшний рацион</h2>
-            <div id="meal-list" class="space-y-4"></div>
-            
+        <!-- Результаты меню -->
+        <div id="screen-results" class="screen">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl header-font font-semibold">Ваше меню</h2>
+                <button onclick="navigateTo('survey')" class="text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-rotate"></i> Заново
+                </button>
+            </div>
+            <div id="meals-container" class="space-y-6"></div>
+        </div>
+
+        <!-- Мой рацион -->
+        <div id="screen-ration" class="screen">
+            <h2 class="text-3xl header-font font-semibold mb-6">Мой рацион</h2>
+            <div id="ration-list" class="space-y-4"></div>
             <div class="mt-8 bg-zinc-900 rounded-3xl p-6">
                 <div class="flex justify-between text-xl font-medium">
                     <span>Итого за день</span>
-                    <span id="day-total" class="text-emerald-400">0 ккал</span>
+                    <span id="ration-total" class="text-emerald-400">0 ккал</span>
                 </div>
             </div>
         </div>
@@ -74,206 +110,182 @@
     <!-- Нижняя навигация -->
     <nav class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-50">
         <div class="grid grid-cols-3 py-3 text-xs text-center">
-            <button onclick="navigateTo(1)" class="flex flex-col items-center text-emerald-400">🔎<span>Поиск</span></button>
-            <button onclick="navigateTo(2)" class="flex flex-col items-center">🍽️<span>Рацион</span></button>
-            <button onclick="navigateTo(0)" class="flex flex-col items-center">📊<span>Прогресс</span></button>
+            <button onclick="navigateTo('survey')" class="flex flex-col items-center text-emerald-400">📋<span>Опрос</span></button>
+            <button onclick="navigateTo('results')" class="flex flex-col items-center">🍽️<span>Меню</span></button>
+            <button onclick="navigateTo('ration')" class="flex flex-col items-center">📦<span>Рацион</span></button>
         </div>
     </nav>
 
-    <!-- Модальное окно -->
-    <div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-end md:items-center justify-center z-[100]">
-        <div class="bg-zinc-900 w-full max-w-lg rounded-t-3xl md:rounded-3xl overflow-hidden">
-            <img id="modal-image" class="w-full h-56 object-cover" alt="">
-            <div class="p-6">
-                <h3 id="modal-name" class="text-2xl font-semibold"></h3>
-                <p id="modal-brand" class="text-emerald-400"></p>
-
-                <div class="mt-6">
-                    <label class="text-xs uppercase tracking-widest">Порция (грамм)</label>
-                    <input id="modal-qty" type="number" value="100" oninput="updateModalNutrition()"
-                           class="w-full bg-zinc-800 rounded-2xl px-5 py-5 text-5xl font-bold text-center outline-none mt-2">
-                </div>
-
-                <div class="grid grid-cols-3 gap-4 mt-8 bg-zinc-800 rounded-3xl p-5 text-center">
-                    <div>
-                        <div class="text-xs text-zinc-400">ККАЛ</div>
-                        <div id="modal-kcal" class="text-4xl font-bold text-emerald-400">0</div>
-                    </div>
-                    <div>
-                        <div class="text-xs text-zinc-400">Б</div>
-                        <div id="modal-protein" class="text-4xl font-bold">0</div>
-                    </div>
-                    <div>
-                        <div class="text-xs text-zinc-400">Ж / У</div>
-                        <div id="modal-fat-carbs" class="text-4xl font-bold">0 / 0</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-4 border-t border-zinc-700 flex gap-3">
-                <button onclick="hideModal()" class="flex-1 py-5 border border-zinc-600 rounded-3xl">Отмена</button>
-                <button onclick="addToToday()" class="flex-1 py-5 bg-emerald-500 rounded-3xl font-medium">Добавить в рацион</button>
-            </div>
+    <!-- Детальное модальное окно рецепта -->
+    <div id="recipe-modal" class="hidden fixed inset-0 bg-black/80 flex items-end md:items-center justify-center z-[100]">
+        <div class="bg-zinc-900 w-full max-w-2xl rounded-t-3xl md:rounded-3xl overflow-hidden max-h-[90vh] overflow-y-auto">
+            <div id="modal-content"></div>
         </div>
     </div>
 
     <script>
-        let todayLog = { meals: [[], [], [], []], total: 0 };
-        let currentProduct = null;
-        const API_BASE = "http://localhost:3000/api/fatsecret";
+        const API_KEY = "f5ef35f77e6b477a940e71fbaefe94ed";
+        let todayRation = [];
+        let currentRecipe = null;
 
-        function safeSetText(id, text) {
-            const el = document.getElementById(id);
-            if (el) el.textContent = text;
+        function selectOption(btn) {
+            const parent = btn.parentElement;
+            Array.from(parent.children).forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         }
 
-        async function searchFatSecret() {
-            const query = document.getElementById('search-input').value.trim();
-            if (!query) return;
+        async function generateMeals() {
+            const calorieBtn = document.querySelector('#calorie-options .active');
+            const dietBtn = document.querySelector('#diet-options .active');
+            const cuisineBtn = document.querySelector('#cuisine-options .active');
 
-            const resultsDiv = document.getElementById('search-results');
-            if (!resultsDiv) return;
+            const targetCalories = calorieBtn ? parseInt(calorieBtn.dataset.value) : 1800;
+            const diet = dietBtn ? dietBtn.dataset.value : 'balanced';
+            const cuisine = cuisineBtn && cuisineBtn.dataset.value ? cuisineBtn.dataset.value : '';
+            const exclude = document.getElementById('exclude-input').value.trim();
 
-            resultsDiv.innerHTML = `<div class="col-span-full py-12 text-center text-zinc-400">Поиск в FatSecret...</div>`;
+            document.getElementById('screen-survey').classList.remove('active');
+            document.getElementById('screen-results').classList.add('active');
+
+            const container = document.getElementById('meals-container');
+            container.innerHTML = `<div class="text-center py-16 text-zinc-400">Генерируем меню...</div>`;
 
             try {
-                const res = await fetch(`${API_BASE}?method=foods.search.v3&search_expression=${encodeURIComponent(query)}&format=json&max_results=20`);
+                let url = `https://api.spoonacular.com/mealplanner/generate?apiKey=${API_KEY}&timeFrame=day&targetCalories=${targetCalories}&diet=${diet}`;
+                if (cuisine) url += `&cuisine=${cuisine}`;
+                if (exclude) url += `&exclude=${encodeURIComponent(exclude)}`;
+
+                const res = await fetch(url);
                 const data = await res.json();
 
-                resultsDiv.innerHTML = '';
-
-                const foods = data.foods?.food ? (Array.isArray(data.foods.food) ? data.foods.food : [data.foods.food]) : [];
-
-                if (!foods.length) {
-                    resultsDiv.innerHTML = `<div class="col-span-full py-12 text-center text-zinc-400">Ничего не найдено</div>`;
-                    return;
+                let html = '';
+                if (data.meals && data.meals.length) {
+                    data.meals.forEach(meal => {
+                        html += `
+                            <div onclick="showRecipeDetail(${meal.id})" class="bg-zinc-900 rounded-3xl overflow-hidden cursor-pointer">
+                                <img src="https://spoonacular.com/recipeImages/${meal.id}-556x370.jpg" 
+                                     class="w-full h-52 object-cover" onerror="this.src='https://picsum.photos/800/400?random'">
+                                <div class="p-5">
+                                    <div class="font-semibold">${meal.title}</div>
+                                    <div class="text-xs text-emerald-400 mt-1">${meal.readyInMinutes} мин • ~${Math.round(meal.servings * 350)} ккал</div>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    html = `<div class="text-center py-12 text-zinc-400">Ничего не найдено</div>`;
                 }
-
-                foods.forEach(food => {
-                    const card = document.createElement('div');
-                    card.className = "food-card bg-zinc-900 rounded-3xl overflow-hidden cursor-pointer";
-                    card.innerHTML = `
-                        <div class="p-5">
-                            <div class="font-semibold">${food.food_name}</div>
-                            <div class="text-xs text-emerald-400">${food.brand_name || 'Без бренда'}</div>
-                            <div class="mt-3 text-emerald-400 font-bold">${food.food_description}</div>
-                            <button onclick="event.stopImmediatePropagation(); selectFood(${JSON.stringify(food).replace(/"/g, '&quot;')});" 
-                                    class="mt-4 bg-emerald-500 w-full py-3 rounded-3xl text-sm font-medium">Добавить</button>
-                        </div>
-                    `;
-                    resultsDiv.appendChild(card);
-                });
+                container.innerHTML = html;
             } catch (e) {
-                resultsDiv.innerHTML = `<div class="col-span-full py-12 text-red-400 text-center">Ошибка подключения к прокси.<br>Убедитесь, что server.js запущен.</div>`;
+                container.innerHTML = `<div class="text-center py-12 text-red-400">Ошибка подключения</div>`;
             }
         }
 
-        function selectFood(food) {
-            currentProduct = {
-                name: food.food_name,
-                brand: food.brand_name || '',
-                kcal100: parseInt(food.food_description) || 100,
-                protein100: 20,
-                fat100: 5,
-                carbs100: 10,
-                image: "https://picsum.photos/id/1080/600/400"
-            };
+        async function showRecipeDetail(id) {
+            try {
+                const res = await fetch(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY}`);
+                const recipe = await res.json();
+                currentRecipe = recipe;
 
-            const modal = document.getElementById('modal');
-            if (!modal) return;
+                let ingredientsHTML = recipe.extendedIngredients.map(ing => 
+                    `<div class="flex justify-between py-2 border-b border-zinc-700">${ing.original}</div>`
+                ).join('');
 
-            document.getElementById('modal-image').src = currentProduct.image;
-            safeSetText('modal-name', currentProduct.name);
-            safeSetText('modal-brand', currentProduct.brand);
+                document.getElementById('modal-content').innerHTML = `
+                    <img src="${recipe.image}" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-semibold mb-2">${recipe.title}</h3>
+                        <div class="flex gap-4 text-sm text-emerald-400">
+                            <div>${recipe.readyInMinutes} мин</div>
+                            <div>${recipe.servings} порций</div>
+                        </div>
 
-            document.getElementById('modal-qty').value = 100;
-            updateModalNutrition();
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+                        <div class="mt-8">
+                            <h4 class="font-medium mb-3">Ингредиенты</h4>
+                            ${ingredientsHTML}
+                        </div>
+
+                        <div class="mt-8">
+                            <h4 class="font-medium mb-3">Приготовление</h4>
+                            <div class="text-zinc-300 leading-relaxed text-sm">${recipe.instructions || 'Инструкция не указана'}</div>
+                        </div>
+
+                        <div class="mt-10 flex gap-3">
+                            <button onclick="addRecipeToRation()" class="flex-1 bg-emerald-500 py-5 rounded-3xl font-medium">Добавить в рацион</button>
+                            <button onclick="closeRecipeModal()" class="flex-1 border border-zinc-600 py-5 rounded-3xl">Закрыть</button>
+                        </div>
+                    </div>
+                `;
+
+                const modal = document.getElementById('recipe-modal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } catch (e) {
+                alert('Не удалось загрузить рецепт');
+            }
         }
 
-        function updateModalNutrition() {
-            if (!currentProduct) return;
-            const qty = parseFloat(document.getElementById('modal-qty').value) || 100;
-            const factor = qty / 100;
-
-            safeSetText('modal-kcal', Math.round(currentProduct.kcal100 * factor));
-            safeSetText('modal-protein', (currentProduct.protein100 * factor).toFixed(1));
-            safeSetText('modal-fat-carbs', 
-                `${(currentProduct.fat100 * factor).toFixed(1)} / ${(currentProduct.carbs100 * factor).toFixed(1)}`);
+        function closeRecipeModal() {
+            const modal = document.getElementById('recipe-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
-        function addToToday() {
-            if (!currentProduct) return;
-            const qty = parseFloat(document.getElementById('modal-qty').value) || 100;
-            const factor = qty / 100;
+        function addRecipeToRation() {
+            if (!currentRecipe) return;
 
             const entry = {
-                ...currentProduct,
-                qty: qty,
-                kcal: Math.round(currentProduct.kcal100 * factor)
+                id: Date.now(),
+                title: currentRecipe.title,
+                image: currentRecipe.image,
+                kcal: Math.round(currentRecipe.pricePerServing / 10) || 450,
+                readyInMinutes: currentRecipe.readyInMinutes
             };
 
-            todayLog.meals[0].push(entry);
-            todayLog.total = (todayLog.total || 0) + entry.kcal;
-
-            localStorage.setItem('caloriyka_of', JSON.stringify(todayLog));
-            hideModal();
-            navigateTo(2);
+            todayRation.push(entry);
+            closeRecipeModal();
+            navigateTo('ration');
+            renderRation();
         }
 
-        function hideModal() {
-            const modal = document.getElementById('modal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-        }
-
-        function navigateTo(n) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            const screen = document.getElementById('screen-' + n);
-            if (screen) screen.classList.add('active');
-            if (n === 2) renderTodayMeals();
-        }
-
-        function renderTodayMeals() {
-            const container = document.getElementById('meal-list');
-            if (!container) return;
+        function renderRation() {
+            const container = document.getElementById('ration-list');
             container.innerHTML = '';
             let total = 0;
 
-            todayLog.meals[0].forEach((item, i) => {
-                total += item.kcal;
+            todayRation.forEach((item, i) => {
+                total += item.kcal || 450;
                 const div = document.createElement('div');
-                div.className = "bg-zinc-900 rounded-3xl p-5 flex justify-between items-center";
+                div.className = "bg-zinc-900 rounded-3xl p-4 flex gap-4 items-center";
                 div.innerHTML = `
-                    <div>
-                        <div class="font-medium">${item.name}</div>
-                        <div class="text-xs text-zinc-400">${item.qty} г • ${item.brand}</div>
+                    <img src="${item.image}" class="w-16 h-16 object-cover rounded-2xl">
+                    <div class="flex-1">
+                        <div class="font-medium text-sm">${item.title}</div>
+                        <div class="text-emerald-400 text-xs">${item.kcal || 450} ккал • ${item.readyInMinutes} мин</div>
                     </div>
-                    <div class="text-right">
-                        <div class="font-bold text-emerald-400">${item.kcal} ккал</div>
-                        <button onclick="removeItem(${i}); event.stopImmediatePropagation()" class="text-red-400 text-xs mt-2">удалить</button>
-                    </div>
+                    <button onclick="removeFromRation(${i}); event.stopImmediatePropagation()" class="text-red-400 text-3xl">×</button>
                 `;
                 container.appendChild(div);
             });
 
-            safeSetText('day-total', total + ' ккал');
+            document.getElementById('ration-total').textContent = total + ' ккал';
         }
 
-        function removeItem(index) {
-            const item = todayLog.meals[0][index];
-            todayLog.total -= item.kcal;
-            todayLog.meals[0].splice(index, 1);
-            localStorage.setItem('caloriyka_of', JSON.stringify(todayLog));
-            renderTodayMeals();
+        function removeFromRation(index) {
+            todayRation.splice(index, 1);
+            renderRation();
+        }
+
+        function navigateTo(screen) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-' + screen).classList.add('active');
+            if (screen === 'ration') renderRation();
         }
 
         window.onload = () => {
-            navigateTo(1);
+            // Дефолтные активные кнопки
+            document.querySelector('#calorie-options button[data-value="1800"]').classList.add('active');
+            document.querySelector('#cuisine-options button[data-value=""]').classList.add('active');
+            navigateTo('survey');
         };
     </script>
 </body>
